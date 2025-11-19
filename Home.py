@@ -1,99 +1,82 @@
+from sklearn.neighbors import KNeighborsClassifier
 import streamlit as st
 import pandas as pd
 import numpy as np
-from sklearn.neighbors import KNeighborsClassifier
-import plotly.express as px
+import plotly.graph_objects as go
 
-# ------------------------------
-# PAGE STYLE
-# ------------------------------
-st.set_page_config(page_title="Iris Classification", layout="wide")
-st.markdown("""
-<style>
-    .main { background-color: #F8F9F9; }
-    .title-text { color: #2E86C1; font-size: 40px; font-weight: bold; text-align: center; }
-    .section-box { background-color: #FFFFFF; padding: 20px; border-radius: 12px; box-shadow: 2px 2px 10px #D5D8DC; }
-    .sub-header { text-align:center; font-size: 20px; font-weight:bold; color:#1F618D; }
-</style>
-""", unsafe_allow_html=True)
-
-# ------------------------------
-# HEADER
-# ------------------------------
-st.markdown('<p class="title-text">โปรแกรมจำลองข้อมูลดอกไม้ Iris</p>', unsafe_allow_html=True)
-st.image("./img/kim.jpeg", width=250)
-
-# ------------------------------
-# FLOWER IMAGES SECTION
-# ------------------------------
-st.markdown("<div class='sub-header'>ประเภทของดอกไม้ Iris</div>", unsafe_allow_html=True)
+st.header('โปรแกรมจำลองข้อมูลดอกไม้ดอกไม้ iris')
+st.image("./img/kim.jpeg")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("<div class='section-box'>", unsafe_allow_html=True)
-    st.header("Versicolor")
-    st.image("./img/iris1.jpg")
-    st.markdown("</div>", unsafe_allow_html=True)
+   st.header("Versicolor")
+   st.image("./img/iris1.jpg")
 
 with col2:
-    st.markdown("<div class='section-box'>", unsafe_allow_html=True)
-    st.header("Virginica")
-    st.image("./img/iris2.jpg")
-    st.markdown("</div>", unsafe_allow_html=True)
+   st.header("Verginiga")
+   st.image("./img/iris2.jpg")
 
 with col3:
-    st.markdown("<div class='section-box'>", unsafe_allow_html=True)
-    st.header("Setosa")
-    st.image("./img/iris3.jpg")
-    st.markdown("</div>", unsafe_allow_html=True)
+   st.header("Setosa")
+   st.image("./img/iris3.jpg")
 
-# ------------------------------
-# STATISTICS SECTION
-# ------------------------------
-st.markdown("<div class='sub-header'>สถิติข้อมูลดอกไม้</div>", unsafe_allow_html=True)
+html_7 = """
+<div style="background-color:#EC7063;padding:15px;border-radius:15px 15px 15px 15px;border-style:'solid';border-color:black">
+<center><h5>สถิติข้อมูลดอกไม้</h5></center>
+</div>
+"""
+st.markdown(html_7, unsafe_allow_html=True)
+st.markdown("")
 
 dt = pd.read_csv("./data/iris.csv")
-st.dataframe(dt.head(10), use_container_width=True)
+st.write(dt.head(10))
 
-# SUMMARY DATA
-numeric_cols = ['petal.length','petal.width','sepal.length','sepal.width']
-summary = dt[numeric_cols].sum().reset_index()
-summary.columns = ["Feature", "Total"]
+dt1 = dt['petal.length'].sum()
+dt2 = dt['petal.width'].sum()
+dt3 = dt['sepal.length'].sum()
+dt4 = dt['sepal.width'].sum()
 
-# show chart
+dx = [dt1, dt2, dt3, dt4]
+dx2 = pd.DataFrame(dx, index=["d1", "d2", "d3", "d4"])
+
 if st.button("แสดงการจินตทัศน์ข้อมูล"):
-    fig = px.bar(summary, x="Feature", y="Total", title="ภาพรวมข้อมูลดอกไม้ Iris", text_auto=True)
-    st.plotly_chart(fig, use_container_width=True)
+   #st.write(dt.head(10))
+   st.bar_chart(dx2)
+   st.button("ไม่แสดงข้อมูล")
 else:
-    st.info("ไม่แสดงข้อมูล")
+    st.write("ไม่แสดงข้อมูล")
 
-# ------------------------------
-# PREDICTION SECTION
-# ------------------------------
-st.markdown("<div class='sub-header'>ทำนายข้อมูลดอกไม้</div>", unsafe_allow_html=True)
+html_8 = """
+<div style="background-color:#6BD5DA;padding:15px;border-radius:15px 15px 15px 15px;border-style:'solid';border-color:black">
+<center><h5>ทำนายข้อมูล</h5></center>
+</div>
+"""
+st.markdown(html_8, unsafe_allow_html=True)
+st.markdown("")
 
-pt_len = st.slider("เลือกข้อมูล petal.length", 0.0, 7.0, 1.0)
-pt_wd = st.slider("เลือกข้อมูล petal.width", 0.0, 3.0, 1.0)
-sp_len = st.number_input("เลือกข้อมูล sepal.length", 0.0, 10.0, 5.0)
-sp_wd = st.number_input("เลือกข้อมูล sepal.width", 0.0, 5.0, 2.0)
+pt_len = st.slider("กรุณาเลือกข้อมูล petal.length")
+pt_wd = st.slider("กรุณาเลือกข้อมูล petal.width")
+
+sp_len = st.number_input("กรุณาเลือกข้อมูล sepal.length")
+sp_wd = st.number_input("กรุณาเลือกข้อมูล sepal.width")
 
 if st.button("ทำนายผล"):
-    X = dt.drop('variety', axis=1)
-    y = dt['variety']
+    #st.write("ทำนาย")
+   dt = pd.read_csv("./data/iris.csv") 
+   X = dt.drop('variety', axis=1)
+   y = dt.variety   
+   Knn_model = KNeighborsClassifier(n_neighbors=3)
+   Knn_model.fit(X, y)   
+   x_input = np.array([[pt_len, pt_wd, sp_len, sp_wd]])
+   st.write(Knn_model.predict(x_input))
+   
+   out=Knn_model.predict(x_input)
 
-    model = KNeighborsClassifier(n_neighbors=3)
-    model.fit(X, y)
-
-    x_input = np.array([[pt_len, pt_wd, sp_len, sp_wd]])
-    prediction = model.predict(x_input)
-
-    st.success(f"ผลการทำนาย: {prediction[0]}")
-
-    if prediction[0] == 'Setosa':
-        st.image("./img/iris1.jpg")
-    elif prediction[0] == 'Versicolor':
-        st.image("./img/iris2.jpg")
-    else:
-        st.image("./img/iris3.jpg")
+   if out[0] == 'Setosa':
+    st.image("./img/iris1.jpg")
+   elif out[0] == 'Versicolor':       
+    st.image("./img/iris2.jpg")
+   else:
+    st.image("./img/iris3.jpg")
 else:
-    st.info("ไม่ทำนาย")
+    st.write("ไม่ทำนาย")
