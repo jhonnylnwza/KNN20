@@ -5,6 +5,6 @@ import numpy as np
 import plotly.graph_objects as go
 
 st.header('kim')
-st.img('./img/kim.jpeg')
-col1, col2, col3 = st.columns(3)
+st.image("./img/kim.jpeg")
+
 
